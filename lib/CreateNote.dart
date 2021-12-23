@@ -10,7 +10,7 @@ class Import extends StatefulWidget {
 
 class _ImportState extends State<Import> {
   String titulo = "",nota = "";
-  Color? _color=Color(0xffF90A0A),selectedColor = Color(0xffF90A0A);
+  Color? _color=Color(0xffE57373),selectedColor = Color(0xffE57373);
 
   @override
   Widget build(BuildContext context) {
@@ -57,27 +57,27 @@ class _ImportState extends State<Import> {
               // ignore: prefer_const_literals_to_create_immutables
               items: [
                 DropdownMenuItem(
-                  value: Color(0xffF90A0A),
+                  value: Color(0xffE57373),
                   child: Text("Rojo")
                 ),
                 DropdownMenuItem(
-                  value: Color(0xffF9F32F),
+                  value: Color(0xffFFF59D),
                   child: Text("Amarillo"),
                 ),
                 DropdownMenuItem(
-                  value: Color(0xff6FF71D),
+                  value: Color(0xffAED581),
                   child: Text("Verde"),
                 ),
                 DropdownMenuItem(
-                  value: Color(0xff19D6D8),
+                  value: Color(0xff8FE3FF),
                   child: Text("Azul"),
                 ),
                 DropdownMenuItem(
-                  value: Color(0xffBF65EB),
+                  value: Color(0xffCE93D8),
                   child: Text("Morado"),
                 ),
                 DropdownMenuItem(
-                  value: Color(0xffE77ECD),
+                  value: Color(0xffF48FB1),
                   child: Text("Rosa"),
                 ),
               ],

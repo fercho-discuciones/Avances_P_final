@@ -1,29 +1,33 @@
-// ignore_for_file: file_names, prefer_const_constructors, use_key_in_widget_constructors, dead_code, unused_label, import_of_legacy_library_into_null_safe, avoid_print, prefer_final_fields, override_on_non_overriding_member, unused_field, annotate_overrides, must_be_immutable, non_constant_identifier_names, unused_element, prefer_equal_for_default_values, deprecated_member_use, prefer_const_constructors_in_immutables, unused_local_variable, await_only_futures, unnecessary_null_comparison, prefer_const_literals_to_create_immutables
+// ignore_for_file: file_names, prefer_const_constructors, use_key_in_widget_constructors, dead_code, unused_label, import_of_legacy_library_into_null_safe, avoid_print, prefer_final_fields, override_on_non_overriding_member, unused_field, annotate_overrides, must_be_immutable, non_constant_identifier_names, unused_element, prefer_equal_for_default_values, deprecated_member_use, prefer_const_constructors_in_immutables, unused_local_variable, await_only_futures, unnecessary_null_comparison, prefer_const_literals_to_create_immutables, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:proyectofinal001/CreateNote.dart';
 import 'package:proyectofinal001/Theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirstScreen extends StatefulWidget {
+
   @override
   State<FirstScreen> createState() => _FirstScreenState();
 }
 
 class _FirstScreenState extends State<FirstScreen> {
+
   CalendarFormat format = CalendarFormat.week;
   DateTime selectedDay = DateTime.now();
   DateTime focusedDay = DateTime.now();
   String _texto = '';
-  List<Nota> notas=[];
+
+  List<Nota> notas = [];
   void addNote() async {
     var data = await Navigator.push(context, MaterialPageRoute(builder: (context) => Import()));
     if (data != null){
       Nota nota = Nota(data['title'], data['cont'], data['them']);
-      setState(() => notas.add(nota));
+      setState(()=> notas.add(nota)
+      );
     }
-
   }
 
   @override
@@ -34,12 +38,12 @@ class _FirstScreenState extends State<FirstScreen> {
         child: ListView(
           children: <Widget>[
             UserAccountsDrawerHeader(
-              accountName: Text('JOSE'),
-              accountEmail: Text('@EQUIPO DE PROGRAMACION'),
+              accountName: Text('FerchoVaz'),
+              accountEmail: Text('@Developer and owner permissions'),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.black,
                 child: Text(
-                  'J',
+                  'F',
                   style: TextStyle(fontSize: 40.0),
                 ),
               ),
@@ -137,32 +141,15 @@ class _FirstScreenState extends State<FirstScreen> {
                 titleTextStyle: TextStyle(fontSize: 17.5)
               ),
             ),
-
-            /*Text(_texto),
-            SizedBox(height: 20),
-            RaisedButton(
-              child: Text('Editar'),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(
-                  builder: (context) => EditScreen(_texto),
-                ))
-                    .then((result) {
-                  if (result != null) {
-                    setState(() {
-                      _texto = result;
-                    });
-                  }
-                });
-              },
-            )*/
             ListView.separated(
               padding: const EdgeInsets.all(10),
               itemCount: notas.length,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index){
-                return Container(
+                return Dismissible(
+                  key: ObjectKey(notas[index]),
+                  child: Container(
                   alignment: Alignment.center,
                   margin: EdgeInsets.all(10.0),
                   color: notas[index].color,
@@ -171,8 +158,16 @@ class _FirstScreenState extends State<FirstScreen> {
                       Text(notas[index].titulo,style: Theme.of(context).textTheme.headline5),
                       SizedBox(height: 20),
                       Text(notas[index].descripcion ,style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.left,),
+                      SizedBox(height: 20),
+                      ElevatedButton(onPressed: ()=> print(index), child: Text('$index'))
                     ]
+                    ),
                   ),
+                onDismissed: (direction){
+                  setState(() {
+                    notas.removeAt(index);
+                  });
+                },
                 );
               },
               separatorBuilder: (BuildContext context, int index) => const Divider()
