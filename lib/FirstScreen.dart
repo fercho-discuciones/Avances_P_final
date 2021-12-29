@@ -1,11 +1,11 @@
-// ignore_for_file: file_names, prefer_const_constructors, use_key_in_widget_constructors, dead_code, unused_label, import_of_legacy_library_into_null_safe, avoid_print, prefer_final_fields, override_on_non_overriding_member, unused_field, annotate_overrides, must_be_immutable, non_constant_identifier_names, unused_element, prefer_equal_for_default_values, deprecated_member_use, prefer_const_constructors_in_immutables, unused_local_variable, await_only_futures, unnecessary_null_comparison, prefer_const_literals_to_create_immutables, unused_import
+// ignore_for_file: file_names, prefer_const_constructors, use_key_in_widget_constructors, dead_code, unused_label, import_of_legacy_library_into_null_safe, avoid_print, prefer_final_fields, override_on_non_overriding_member, unused_field, annotate_overrides, must_be_immutable, non_constant_identifier_names, unused_element, prefer_equal_for_default_values, deprecated_member_use, prefer_const_constructors_in_immutables, unused_local_variable, await_only_futures, unnecessary_null_comparison, prefer_const_literals_to_create_immutables, unused_import, prefer_adjacent_string_concatenation
 
 import 'package:flutter/material.dart';
 import 'package:proyectofinal001/CreateNote.dart';
 import 'package:proyectofinal001/Theme.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Drawer.dart';
 
 class FirstScreen extends StatefulWidget {
 
@@ -15,18 +15,40 @@ class FirstScreen extends StatefulWidget {
 
 class _FirstScreenState extends State<FirstScreen> {
 
+  @override
+  void initState() {
+    super.initState();
+    mostrar_datos();
+  }
+
+  int indexa = 0;
+  changevalue() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(()=>indexa++);
+    prefs.setInt('value',indexa);
+  }
+
   CalendarFormat format = CalendarFormat.week;
   DateTime selectedDay = DateTime.now();
   DateTime focusedDay = DateTime.now();
   String _texto = '';
 
-  List<Nota> notas = [];
+  List<Nota> notas = [
+    //Nota("Nota guardada","contenido guardado",Color(0xffAED581)),
+  ];
+
+  List<String> nums=[];
+
   void addNote() async {
     var data = await Navigator.push(context, MaterialPageRoute(builder: (context) => Import()));
     if (data != null){
-      Nota nota = Nota(data['title'], data['cont'], data['them']);
-      setState(()=> notas.add(nota)
-      );
+      Nota nota = Nota(data['title'], data['cont'], data['them'],indexa);
+      setState(()=> notas.add(nota));
+      setState(()=> nums.add('$indexa'));
+      guardar_datos(data['title'], data['cont'], data['them'], indexa);
+      guardar_lista(nums);
+      changevalue();
     }
   }
 
@@ -34,69 +56,10 @@ class _FirstScreenState extends State<FirstScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Agenda")),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text('FerchoVaz'),
-              accountEmail: Text('@Developer and owner permissions'),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.black,
-                child: Text(
-                  'F',
-                  style: TextStyle(fontSize: 40.0),
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('AMAZON'),
-              leading: Icon(Icons.car_rental),
-              onTap: () {
-                launch("https://www.amazon.com.mx/");
-              }
-            ),
-            ListTile(
-              title: Text('STEREN'),
-              leading: Icon(Icons.phone_android),
-              onTap: () {
-                launch("https://www.steren.com.mx/");
-              },
-            ),
-            ListTile(
-              title: Text('GOGLE DRIVE'),
-              leading: Icon(Icons.book_online),
-              onTap: () {
-                launch("https://drive.google.com/");
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('GOGLE MAPS'),
-              leading: Icon(Icons.book_online),
-              onTap: () {
-                launch("https://www.google.com.mx/maps");
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('INGRESAR'),
-              leading: Icon(Icons.one_k_plus),
-              onTap: () {
-                //   _onSelectItem(1);
-              },
-            ),
-            ListTile(
-              title: Text('SALIR'),
-              leading: Icon(Icons.book_online),
-              onTap: () {
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: MyDrawer(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => addNote(),
-        child: Icon(Icons.add, color: Colors.blueGrey),
+        child: Icon(Icons.add, color: blueSaphire),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -147,8 +110,9 @@ class _FirstScreenState extends State<FirstScreen> {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index){
+                //guardar_index(index);
                 return Dismissible(
-                  key: ObjectKey(notas[index]),
+                  key: ObjectKey(nums[index]),
                   child: Container(
                   alignment: Alignment.center,
                   margin: EdgeInsets.all(10.0),
@@ -159,13 +123,15 @@ class _FirstScreenState extends State<FirstScreen> {
                       SizedBox(height: 20),
                       Text(notas[index].descripcion ,style: Theme.of(context).textTheme.headline6, textAlign: TextAlign.left,),
                       SizedBox(height: 20),
-                      ElevatedButton(onPressed: ()=> print(index), child: Text('$index'))
+                      ElevatedButton(onPressed: ()=> print(notas[index].llave), child: Text('$index'))
                     ]
                     ),
                   ),
                 onDismissed: (direction){
                   setState(() {
                     notas.removeAt(index);
+                    nums.removeAt(index);
+                    guardar_lista(nums);
                   });
                 },
                 );
@@ -175,54 +141,64 @@ class _FirstScreenState extends State<FirstScreen> {
       ]))
     );
   }
+
+  mostrar_datos() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    indexa = prefs.getInt('value') ?? 0;
+
+    //int inde = await prefs.getInt('index')??0;
+    nums = await prefs.getStringList('list')??[];
+    for(String i in nums){
+      String tit = await prefs.getString('titulo'+i)??"";
+      String not = await prefs.getString('contenido'+i)??"";
+      String colstr = await prefs.getString('testcolor'+i)??"";
+      int val = await prefs.getInt('intcolor'+i)??0;
+      int borrar = await prefs.getInt('value'+i)??0;
+
+      Color otherColor = Color(val);
+
+      Nota nota = Nota(tit, not, otherColor, indexa);
+      setState(()=> notas.add(nota)
+      );
+    }
+  }
+
+  Future guardar_datos(String titulo, String contenido, Color color, int inde) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Color colors = color;
+    String colorString = colors.toString();
+    String valueString = colorString.split('(0x')[1].split(')')[0];
+    int value = int.parse(valueString, radix: 16);
+
+    await prefs.setString('titulo'+'$inde', titulo);
+    await prefs.setString('contenido'+'$inde', contenido);
+    await prefs.setString('testcolor'+'$inde', valueString);
+    await prefs.setInt('intcolor'+'$inde',value);
+    //indexa++;
+  }
+
+  /*guardar_index(int index) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt('index',index);
+  }*/
+
+  guardar_lista(List<String> list) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('list', list);
+  }
+
 }
 
 class Nota{
   String titulo = "";
   String descripcion = "";
   Color color = Color(0xffF90A0A);
+  int llave = 0;
 
-  Nota(this.titulo, this.descripcion, this.color);
-
+  Nota(this.titulo, this.descripcion, this.color, this.llave);
 }
 
-class EditScreen extends StatefulWidget {
-  final String texto;
-  EditScreen(this.texto);
-  @override
-  _EditScreenState createState() => _EditScreenState();
-}
 
-class _EditScreenState extends State<EditScreen> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    _controller = TextEditingController(text: widget.texto);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('EDITA EL TEXTO'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-            child: Column(
-          children: <Widget>[
-            TextField(controller: _controller),
-            RaisedButton(
-              child: Text('GUARDAR'),
-              onPressed: () {
-                Navigator.of(context).pop(_controller.text);
-              },
-            )
-          ],
-        )),
-      ),
-    );
-  }
-}

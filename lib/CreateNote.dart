@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors
+// ignore_for_file: file_names, use_key_in_widget_constructors, prefer_const_constructors, use_function_type_syntax_for_parameters, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:proyectofinal001/Theme.dart';
@@ -18,7 +18,6 @@ class _ImportState extends State<Import> {
       appBar: AppBar(title: Text("Crea nueva nota")),
       body:Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      //height: 300,
       color: whitee,
       child: Form(
         child: Column(
@@ -87,11 +86,11 @@ class _ImportState extends State<Import> {
               mainAxisAlignment: MainAxisAlignment.end,
               children:[
                 ElevatedButton(onPressed: (){
-                  print(titulo);
-                  print(nota);
+                  //print(titulo);
+                  //print(nota);
                   var data = {'title': titulo,'cont': nota, 'them':_color};
                   Navigator.pop(context, data);},
-                child: Text("Aceptar",style: TextStyle(color: whitee)),
+                child: Text("Guardar",style: TextStyle(color: whitee)),
                 style: ElevatedButton.styleFrom(primary: blueSaphire)
                 ),
                 SizedBox(width: 10),

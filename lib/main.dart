@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-    theme: myTheme(context),
-    routes: {
-      '/': (context)=>FirstScreen(),
-    },
-    initialRoute: '/',
+      debugShowCheckedModeBanner: false,
+      theme: myTheme(context),
+      routes: {
+        '/': (context)=>FirstScreen(),
+      },
+      initialRoute: '/',
     );
   }
 }
